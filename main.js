@@ -4,6 +4,7 @@ import savePng from './savePng'
 import Shadow from './Shadow'
 import FontPicker from './FontPicker';
 import './styles.css'
+import getFontFamilies from './fonts';
 
 
 
@@ -24,11 +25,7 @@ function clear(element) {
     }
 }
 
-let fontFamilies = ["Arial", "Baskerville", "Bodoni MT", "Calibri", "Calisto MT", "Cambria", "Candara",
-"Century Gothic", "Consolas", "Copperplate Gothic", "Courier New", "Dejavu Sans", "Didot", 
-"Franklin Gothic", "Garamond", "Georgia", "Gill Sans", "Goudy Old Style", "Helvetica", "Impact", 
-"Lucida Bright", "Lucida Sans", "Microsoft Sans Serif", "Optima", "Palatino", "Perpetua", "Rockwell", 
-"Segoe UI", "Tahoma", "Trebuchet MS", "Verdana"]
+
 
 let proxy = {
     get strokeWidth() {
@@ -97,6 +94,22 @@ let proxy = {
         svgText.style.stroke = value
     },
 
+    get fontWeight() {
+        return parseInt(svgText.style.fontWeight, 10)
+    },
+
+    set fontWeight(value) {
+        svgText.style.fontWeight = value
+    },
+
+    get italic() {
+        return svgText.style.fontStyle === 'italic'
+    },
+
+    set italic(value) {
+        svgText.style.fontStyle = value ? 'italic' : 'normal'
+    },
+
     save: savePng,
 }
 
@@ -106,6 +119,7 @@ proxy.stroke = 'rgba(172, 30, 250, 0.9)'
 proxy.strokeWidth = 1
 proxy.fontSize = 100
 proxy.fontFamily = 'Rockwell'
+proxy.fontWeight = 400
 
 // svgText.innerHTML = 'hey <br/> there'
 
@@ -129,13 +143,17 @@ let font = fontFolder.add(proxy, 'fontFamily')
 let li = font.__li
 li.classList.add('font')
 
-let fontPicker = new FontPicker(font.__input, fontFamilies, 0);
+let fontFamilies = getFontFamilies()
+
+let fontPicker = new FontPicker(font.__input, fontFamilies, 0)
 fontPicker.onchange((fontFamily) => {
     //console.log('picked', font)
     proxy.fontFamily = fontFamily
 })
 
-fontFolder.add(proxy, 'fontSize', 10, 200, 1)
+fontFolder.add(proxy, 'fontSize', 10, 200, 1).name('size')
+fontFolder.add(proxy, 'fontWeight', 100, 900, 100).name('weight')
+fontFolder.add(proxy, 'italic')
 fontFolder.addColor(proxy, 'fill')
 fontFolder.addColor(proxy, 'stroke')
 fontFolder.add(proxy, 'strokeWidth', 0, 10, 0.1)
